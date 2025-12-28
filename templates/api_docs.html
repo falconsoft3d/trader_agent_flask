@@ -1,0 +1,156 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="animate-entry">
+    <div class="glass-card" style="margin-bottom: 2rem;">
+        <h1 style="color: var(--header-text); border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            🔌 API de Desarrolladores
+        </h1>
+        <p style="color: var(--text-muted); font-size: 16px;">
+            Integra nuestra potente inteligencia de mercado en tus propias aplicaciones utilizando nuestra API REST.
+        </p>
+
+        <h3 style="margin-top: 2rem;">Autenticación</h3>
+        <p>
+            Todas las solicitudes deben incluir el header <code>Authorization</code> con tu token API.
+        </p>
+        <div
+            style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 6px; font-family: monospace; color: #58a6ff;">
+            Authorization: Bearer <span id="displayToken">********</span>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-top: 0.5rem;">
+            * El token se configura en la variable de entorno <code>API_TOKEN</code>.
+        </p>
+
+        <h3 style="margin-top: 2rem;">Endpoint: Analizar Inteligencia</h3>
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+            <span class="badge badge-UP">GET</span>
+            <span class="badge badge-UP">POST</span>
+            <code style="font-size: 16px;">/api/analyze</code>
+        </div>
+
+        <table style="width: 100%; text-align: left; border-collapse: collapse; margin-bottom: 2rem;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <th style="padding: 10px; color: var(--text-color);">Parámetro</th>
+                    <th style="padding: 10px; color: var(--text-color);">Tipo</th>
+                    <th style="padding: 10px; color: var(--text-color);">Descripción</th>
+                    <th style="padding: 10px; color: var(--text-color);">Default</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td style="padding: 10px; color: #58a6ff;">ticker</td>
+                    <td style="padding: 10px;">String</td>
+                    <td style="padding: 10px;">Símbolo del activo (ej. AAPL, BTC-USD)</td>
+                    <td style="padding: 10px;">Required</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; color: #58a6ff;">interval</td>
+                    <td style="padding: 10px;">String</td>
+                    <td style="padding: 10px;">Intervalo de tiempo ('1d' o '1h')</td>
+                    <td style="padding: 10px;">'1d'</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Interactive Tester -->
+    <div class="glass-card">
+        <h2 style="margin-top: 0;">🧪 Consola de Prueba</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+            <!-- Request Form -->
+            <div>
+                <label style="display: block; margin-bottom: 0.5rem;">API Token</label>
+                <input type="text" id="apiTokenInput" placeholder="Ingresa tu Token API" value="trader_api_demo_123"
+                    style="width: 100%; margin-bottom: 1rem; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
+
+                <label style="display: block; margin-bottom: 0.5rem;">Ticker</label>
+                <input type="text" id="apiTickerInput" placeholder="ej. TSLA" value="TSLA"
+                    style="width: 100%; margin-bottom: 1rem; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
+
+                <label style="display: block; margin-bottom: 0.5rem;">Intervalo</label>
+                <select id="apiIntervalInput"
+                    style="width: 100%; margin-bottom: 1.5rem; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px;">
+                    <option value="1d">Diario (1d)</option>
+                    <option value="1h">Por Hora (1h)</option>
+                </select>
+
+                <button onclick="testApi()" class="btn btn-primary" id="btnTest" style="width: 100%;">
+                    Enviar Petición
+                </button>
+            </div>
+
+            <!-- Response Viewer -->
+            <div style="position: relative;">
+                <label style="display: block; margin-bottom: 0.5rem;">Respuesta JSON</label>
+                <pre id="jsonResponse"
+                    style="background: #0d1117; border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem; height: 350px; overflow: auto; color: #c9d1d9; font-size: 13px;">Waiting for request...</pre>
+
+                <div id="loading"
+                    style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                    <div
+                        style="width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function testApi() {
+        const token = document.getElementById('apiTokenInput').value;
+        const ticker = document.getElementById('apiTickerInput').value;
+        const interval = document.getElementById('apiIntervalInput').value;
+        const responseArea = document.getElementById('jsonResponse');
+        const btn = document.getElementById('btnTest');
+        const loading = document.getElementById('loading');
+
+        if (!token || !ticker) {
+            alert("Token y Ticker son requeridos");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.style.opacity = "0.7";
+        loading.style.display = "block";
+        responseArea.innerText = "Processing...";
+
+        try {
+            const res = await fetch(`/api/analyze?ticker=${ticker}&interval=${interval}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await res.json();
+            responseArea.innerText = JSON.stringify(data, null, 2);
+
+            // Syntax highlight simplistic
+            // Not implementing full highlight library to keep it light
+        } catch (error) {
+            responseArea.innerText = "Error de red: " + error.message;
+        } finally {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            loading.style.display = "none";
+        }
+    }
+</script>
+
+<style>
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% endblock %}

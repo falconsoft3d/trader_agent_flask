@@ -5,15 +5,21 @@ import numpy as np
 from educational import get_slides
 
 class StockAnalyzer:
-    def __init__(self, ticker):
+    def __init__(self, ticker, interval="1d"):
         self.ticker = ticker.upper()
+        self.interval = interval
         self.data = None
         self.info = None
 
-    def fetch_data(self, period="2y"):
+    def fetch_data(self):
         try:
+            # Adjust period based on interval
+            # Hourly data is limited to 730 days by yfinance
+            period = "2y" if self.interval == "1h" else "2y" # Using 2y for daily too to be safe, or 5y? 2y is enough for calculations. 
+            # Actually for daily we might want more history if SMA200 needs it, but 2y is ~500 candles (crypto 730). It's fine.
+            
             stock = yf.Ticker(self.ticker)
-            self.data = stock.history(period=period)
+            self.data = stock.history(period=period, interval=self.interval)
             self.info = stock.info
             if self.data.empty:
                 return False
@@ -332,6 +338,7 @@ class StockAnalyzer:
         
         return {
             "ticker": self.ticker,
+            "interval": self.interval,
             "company_name": self.info.get('longName', self.ticker) if self.info else self.ticker,
             "company_summary": self.info.get('longBusinessSummary', 'No disponible.') if self.info else 'No disponible.',
             "current_price": current_price,

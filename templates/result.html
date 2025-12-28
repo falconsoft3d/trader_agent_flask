@@ -16,8 +16,14 @@
                 <h3 style="margin: 0; font-size: 16px; color: var(--text-muted); font-weight: 400;">{{ data.company_name
                     }}</h3>
             </div>
-            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px; font-weight: 600;">Precio Actual: ${{
-                "%.2f"|format(data.current_price) }}</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px; font-weight: 600;">
+                Precio Actual: ${{ "%.2f"|format(data.current_price) }}
+                <span
+                    style="font-weight: 400; margin-left: 10px; border-left: 1px solid var(--border-color); padding-left: 10px;">
+                    Análisis: {% if data.get('interval') == '1h' %}Por Hora (Corto Plazo){% else %}Diario (Estándar){%
+                    endif %}
+                </span>
+            </p>
 
             {% if data.company_summary %}
             <div

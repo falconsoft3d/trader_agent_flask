@@ -16,7 +16,11 @@
                 <h3>StockPredict IA</h3>
             </a>
             {% if session.authenticated %}
-            <a href="{{ url_for('logout') }}" class="btn btn-logout">Cerrar Sesión</a>
+            <nav style="display: flex; gap: 1rem; align-items: center;">
+                <a href="{{ url_for('api_docs') }}"
+                    style="text-decoration: none; color: var(--text-color); font-weight: 500; font-size: 14px;">API</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-logout">Cerrar Sesión</a>
+            </nav>
             {% endif %}
         </header>
 

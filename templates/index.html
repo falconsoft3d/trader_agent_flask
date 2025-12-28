@@ -12,6 +12,14 @@
             <input type="text" name="ticker" placeholder="Ingresa Símbolo (ej. AAPL)"
                 style="font-size: 16px; height: 40px;" required>
         </div>
+        <div style="margin-bottom: 1rem; display: flex; justify-content: center; gap: 1rem;">
+            <label style="cursor: pointer;">
+                <input type="radio" name="timeframe" value="1d" checked> Diario
+            </label>
+            <label style="cursor: pointer;">
+                <input type="radio" name="timeframe" value="1h"> Por Hora
+            </label>
+        </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 16px; padding: 8px;">
             Analizar Activo
         </button>
@@ -25,9 +33,20 @@
             <h3 style="margin: 0; color: var(--header-text); font-size: 18px;">
                 🔥 Más Activas (Day Trading) - Selecciona Varias
             </h3>
-            <button type="submit" class="btn btn-primary" style="font-size: 14px; padding: 6px 12px;">
-                Analizar Seleccionados
-            </button>
+
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div style="display: flex; gap: 0.5rem; font-size: 14px;">
+                    <label style="cursor: pointer;">
+                        <input type="radio" name="timeframe" value="1d" checked> 1D
+                    </label>
+                    <label style="cursor: pointer;">
+                        <input type="radio" name="timeframe" value="1h"> 1H
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary" style="font-size: 14px; padding: 6px 12px;">
+                    Analizar Seleccionados
+                </button>
+            </div>
         </div>
 
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
