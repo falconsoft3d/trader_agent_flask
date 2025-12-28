@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockPredict AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container animate-entry">
+        <header
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <a href="/" style="text-decoration:none; color: var(--header-text);">
+                <h3>StockPredict AI</h3>
+            </a>
+            {% if session.authenticated %}
+            <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+            {% endif %}
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+        <footer
+            style="text-align: center; margin-top: 4rem; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+            <p>&copy; 2025 StockPredict AI. For educational purposes only.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

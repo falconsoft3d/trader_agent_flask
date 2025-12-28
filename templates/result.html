@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="animate-entry">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="font-size: 24px; margin: 0; color: var(--header-text);">{{ data.ticker }}</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Precio Actual: ${{
+                "%.2f"|format(data.current_price) }}</p>
+        </div>
+        <a href="/dashboard" class="btn" style="color: var(--text-color);">Volver</a>
+    </div>
+
+    <div class="glass-card prediction-summary">
+        <h3 style="font-size: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+            Consenso del Algoritmo</h3>
+        {% set decision = data.summary.decision %}
+        <div
+            class="decision-huge {% if 'BUY' in decision or 'COMPRAR' in decision %}text-up{% elif 'SELL' in decision or 'VENDER' in decision %}text-down{% else %}text-neutral{% endif %}">
+            {{ decision }}
+        </div>
+        <div
+            style="display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <div style="text-align: center;">
+                <span style="font-size: 1.5rem; font-weight: 600;" class="text-up">{{ data.summary.up_votes }}</span>
+                <div style="font-size: 12px; color: var(--text-muted);">Alcista</div>
+            </div>
+            <div style="text-align: center;">
+                <span style="font-size: 1.5rem; font-weight: 600;" class="text-down">{{ data.summary.down_votes
+                    }}</span>
+                <div style="font-size: 12px; color: var(--text-muted);">Bajista</div>
+            </div>
+            <div style="text-align: center;">
+                <span style="font-size: 1.5rem; font-weight: 600;" class="text-neutral">{{ data.summary.neutral_votes
+                    }}</span>
+                <div style="font-size: 12px; color: var(--text-muted);">Neutral</div>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin-bottom: 1rem; font-size: 18px;">Desglose del Análisis</h3>
+    <div class="results-grid">
+        {% for item in data.results %}
+        <div class="method-card" style="cursor: pointer;" onclick="openModal('{{ item.id }}')">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--text-color);">{{ item.method }}
+                </h4>
+                <span class="badge badge-{{ item.prediction }}">{{ item.prediction }}</span>
+            </div>
+            <div style="font-size: 16px; font-weight: 500; margin-bottom: 0.5rem; color: var(--header-text);">
+                {{ item.value }}
+            </div>
+            <p style="margin: 0; font-size: 12px; color: var(--text-muted);">
+                {{ item.desc }}
+            </p>
+            <div style="margin-top: 10px; font-size: 12px; color: #58a6ff; font-weight: 500;">
+                Click para ver detalles &rarr;
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="analysisModal" class="modal-overlay" onclick="if(event.target === this) closeModal()">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle"
+            style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;"></h2>
+
+        <div style="margin-bottom: 2rem;">
+            <p id="modalExplanation" style="color: var(--text-color); margin-bottom: 1rem;"></p>
+            <div style="background: rgba(110, 118, 129, 0.1); padding: 1rem; border-radius: 6px;">
+                <h4 style="margin-top: 0; font-size: 14px; color: var(--text-muted);">Metodología</h4>
+                <p id="modalMethodology" style="margin: 0; font-size: 13px; color: var(--text-color);"></p>
+            </div>
+        </div>
+
+        <div style="height: 300px; width: 100%;">
+            <canvas id="analysisChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pass the full results object to JS
+    const analysisData = {{ data.results | tojson }};
+    let currentChart = null;
+
+    function openModal(id) {
+        const item = analysisData.find(r => r.id === id);
+        if (!item) return;
+
+        document.getElementById('modalTitle').innerText = item.method;
+        document.getElementById('modalExplanation').innerText = item.explanation;
+        document.getElementById('modalMethodology').innerText = item.methodology;
+
+        document.getElementById('analysisModal').style.display = 'flex';
+
+        renderChart(item);
+    }
+
+    function closeModal() {
+        document.getElementById('analysisModal').style.display = 'none';
+        if (currentChart) {
+            currentChart.destroy();
+            currentChart = null;
+        }
+    }
+
+    function renderChart(item) {
+        const ctx = document.getElementById('analysisChart').getContext('2d');
+
+        if (currentChart) {
+            currentChart.destroy();
+        }
+
+        currentChart = new Chart(ctx, {
+            type: item.chart_type || 'line',
+            data: item.chart_data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#c9d1d9'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: '#30363d'
+                        },
+                        ticks: {
+                            color: '#8b949e'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: '#30363d'
+                        },
+                        ticks: {
+                            color: '#8b949e'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

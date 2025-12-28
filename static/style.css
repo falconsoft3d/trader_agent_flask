@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+    --bg-color: #0d1117;
+    /* GitHub Dark Dimmed Background */
+    --text-color: #c9d1d9;
+    /* GitHub Text Main */
+    --text-muted: #8b949e;
+    /* GitHub Text Muted */
+    --border-color: #30363d;
+    /* GitHub Border */
+    --card-bg: #161b22;
+    /* GitHub Card Background */
+    --primary-btn-bg: #238636;
+    /* GitHub Green Button */
+    --primary-btn-hover: #2ea043;
+    --primary-btn-text: #ffffff;
+    --input-bg: #0d1117;
+    --input-border: #30363d;
+    --header-text: #f0f6fc;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
+/* GitHub-style Card */
+.glass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: none;
+    /* Removed glass shadow */
+    backdrop-filter: none;
+    /* Removed blur */
+}
+
+h1,
+h2,
+h3 {
+    margin-top: 0;
+    font-weight: 600;
+    color: var(--header-text);
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    background: none;
+    -webkit-text-fill-color: initial;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 5px 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 20px;
+    outline: none;
+    transition: border-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+    height: 32px;
+}
+
+input:focus {
+    border-color: #58a6ff;
+    /* GitHub Blue Focus Ring */
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+}
+
+.btn {
+    display: inline-block;
+    padding: 5px 16px;
+    font-weight: 500;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid rgba(240, 246, 252, 0.1);
+    cursor: pointer;
+    transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 20px;
+    box-shadow: 0 0 transparent;
+}
+
+.btn-primary {
+    background-color: var(--primary-btn-bg);
+    color: var(--primary-btn-text);
+    border-color: rgba(240, 246, 252, 0.1);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-btn-hover);
+    border-color: rgba(240, 246, 252, 0.1);
+    transform: none;
+    /* Remove bounce */
+}
+
+.btn-logout {
+    background: #21262d;
+    color: #c9d1d9;
+    border: 1px solid var(--border-color);
+}
+
+.btn-logout:hover {
+    background: #30363d;
+    color: #c9d1d9;
+    border-color: #8b949e;
+}
+
+/* Prediction Badges */
+.badge {
+    padding: 0 7px;
+    border-radius: 2em;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    border: 1px solid transparent;
+}
+
+.badge-UP {
+    color: #3fb950;
+    border-color: rgba(63, 185, 80, 0.4);
+    background: transparent;
+}
+
+.badge-DOWN {
+    color: #f85149;
+    border-color: rgba(248, 81, 73, 0.4);
+    background: transparent;
+}
+
+.badge-NEUTRAL {
+    color: #8b949e;
+    border-color: rgba(139, 148, 158, 0.4);
+    background: transparent;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.method-card {
+    background: var(--bg-color);
+    /* Contrast inside card */
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    transition: none;
+    /* Remove transform */
+}
+
+.method-card:hover {
+    border-color: #8b949e;
+}
+
+.prediction-summary {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    border-radius: 6px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+.decision-huge {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin: 1rem 0;
+}
+
+.text-up {
+    color: #3fb950;
+}
+
+.text-down {
+    color: #f85149;
+}
+
+.text-neutral {
+    color: #8b949e;
+}
+
+.flash-messages {
+    margin-bottom: 1rem;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    background: rgba(248, 81, 73, 0.1);
+    /* Red tint */
+    color: #ff7b72;
+    border: 1px solid rgba(248, 81, 73, 0.4);
+}
+
+/* Modal Styling */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 800px;
+    padding: 2rem;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: var(--text-color);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.modal-close:hover {
+    color: var(--text-color);
+}
+
+/* Remove animations for that "snappy" GitHub feel, or keep them very subtle.
+   User asked for black and white, simple. */
+.animate-entry {
+    animation: none;
+}

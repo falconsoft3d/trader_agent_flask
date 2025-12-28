@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+    <h1>Market Intelligence</h1>
+    <p style="font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem auto;">
+        Advanced algorithmic analysis using 10 proven statistical indicators.
+    </p>
+
+    <form action="{{ url_for('dashboard') }}" method="POST" style="max-width: 400px; margin: 0 auto;">
+        <div style="margin-bottom: 1rem;">
+            <input type="text" name="ticker" placeholder="Enter Stock Symbol (e.g. AAPL)"
+                style="font-size: 16px; height: 40px;" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 16px; padding: 8px;">
+            Analyze Asset
+        </button>
+    </form>
+</div>
+{% endblock %}
