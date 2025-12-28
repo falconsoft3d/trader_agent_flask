@@ -2,19 +2,120 @@
 
 {% block content %}
 <div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
-    <h1>Market Intelligence</h1>
+    <h1>Inteligencia de Mercado</h1>
     <p style="font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem auto;">
-        Advanced algorithmic analysis using 10 proven statistical indicators.
+        Análisis algorítmico avanzado utilizando 10 indicadores estadísticos probados.
     </p>
 
     <form action="{{ url_for('dashboard') }}" method="POST" style="max-width: 400px; margin: 0 auto;">
         <div style="margin-bottom: 1rem;">
-            <input type="text" name="ticker" placeholder="Enter Stock Symbol (e.g. AAPL)"
+            <input type="text" name="ticker" placeholder="Ingresa Símbolo (ej. AAPL)"
                 style="font-size: 16px; height: 40px;" required>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 16px; padding: 8px;">
-            Analyze Asset
+            Analizar Activo
         </button>
     </form>
 </div>
+
+<div style="margin-top: 3rem;">
+    <form action="{{ url_for('dashboard') }}" method="POST" id="multiStockForm">
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+            <h3 style="margin: 0; color: var(--header-text); font-size: 18px;">
+                🔥 Más Activas (Day Trading) - Selecciona Varias
+            </h3>
+            <button type="submit" class="btn btn-primary" style="font-size: 14px; padding: 6px 12px;">
+                Analizar Seleccionados
+            </button>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
+            {% for stock in stocks %}
+            <div>
+                <input type="checkbox" name="selected_tickers" value="{{ stock }}" id="chk_{{ stock }}"
+                    style="display: none;" onchange="updateInput('{{ stock }}')">
+                <label for="chk_{{ stock }}" class="stock-chip">
+                    {{ stock }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                <h3 style="margin: 0; color: var(--header-text); font-size: 18px;">
+                    💱 Forex - Divisas
+                </h3>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
+                {% for pair in forex %}
+                <div>
+                    <input type="checkbox" name="selected_tickers" value="{{ pair }}" id="chk_{{ pair }}"
+                        style="display: none;" onchange="updateInput('{{ pair }}')">
+                    <label for="chk_{{ pair }}" class="stock-chip">
+                        {{ pair }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                <h3 style="margin: 0; color: var(--header-text); font-size: 18px;">
+                    🪙 Criptomonedas
+                </h3>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
+                {% for coin in crypto %}
+                <div>
+                    <input type="checkbox" name="selected_tickers" value="{{ coin }}" id="chk_{{ coin }}"
+                        style="display: none;" onchange="updateInput('{{ coin }}')">
+                    <label for="chk_{{ coin }}" class="stock-chip">
+                        {{ coin }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function updateInput(val) {
+        // If the user checked it, put it in the input box for single analysis if they want
+        // But main purpose is multi select.
+        // User asked: "si selecciono el ultimo se escriba en el input"
+        const input = document.querySelector('input[name="ticker"]');
+        if (document.getElementById('chk_' + val).checked) {
+            input.value = val;
+        }
+    }
+</script>
+
+<style>
+    .stock-chip {
+        display: inline-block;
+        padding: 5px 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        font-size: 13px;
+        border-radius: 6px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s;
+    }
+
+    .stock-chip:hover {
+        border-color: #8b949e;
+    }
+
+    input:checked+.stock-chip {
+        background: #238636;
+        color: white;
+        border-color: #238636;
+    }
+</style>
 {% endblock %}

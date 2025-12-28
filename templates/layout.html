@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StockPredict AI</title>
+    <title>StockPredict IA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -13,10 +13,10 @@
         <header
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
             <a href="/" style="text-decoration:none; color: var(--header-text);">
-                <h3>StockPredict AI</h3>
+                <h3>StockPredict IA</h3>
             </a>
             {% if session.authenticated %}
-            <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-logout">Cerrar Sesión</a>
             {% endif %}
         </header>
 
@@ -36,7 +36,7 @@
 
         <footer
             style="text-align: center; margin-top: 4rem; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border-color); padding-top: 2rem;">
-            <p>&copy; 2025 StockPredict AI. For educational purposes only.</p>
+            <p>&copy; 2025 StockPredict IA. Solo para fines educativos.</p>
         </footer>
     </div>
 </body>

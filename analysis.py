@@ -2,6 +2,7 @@ import yfinance as yf
 import pandas as pd
 import ta
 import numpy as np
+from educational import get_slides
 
 class StockAnalyzer:
     def __init__(self, ticker):
@@ -42,15 +43,20 @@ class StockAnalyzer:
         rsi_series = ta.momentum.RSIIndicator(df['Close']).rsi()
         last_rsi = rsi_series.iloc[-1]
         vote_rsi = "DOWN" if last_rsi > 70 else ("UP" if last_rsi < 30 else "NEUTRAL")
+        
+        rsi_history = "Desarrollado por J. Welles Wilder Jr. en 1978 y publicado en su libro 'New Concepts in Technical Trading Systems'. Es uno de los indicadores más populares y utilizados por traders técnicos en todo el mundo para identificar puntos de inflexión en el mercado."
+        rsi_desc = "Mide la velocidad y el cambio de los movimientos de precios."
+        
         results.append({
             "id": "rsi",
             "method": "Índice de Fuerza Relativa (RSI)",
             "value": f"{last_rsi:.2f}",
             "prediction": vote_rsi,
-            "desc": "Mide la velocidad y el cambio de los movimientos de precios.",
+            "desc": rsi_desc,
             "explanation": "El RSI es un oscilador de momento que mide la velocidad y la magnitud de los cambios recientes de precios para evaluar condiciones de sobrevaloración o infravaloración.",
             "methodology": "Se calcula comparando la magnitud de las ganancias recientes con las pérdidas recientes. Un valor > 70 indica sobrecompra (posible bajada) y < 30 indica sobreventa (posible subida).",
-            "history": "Desarrollado por J. Welles Wilder Jr. en 1978 y publicado en su libro 'New Concepts in Technical Trading Systems'. Es uno de los indicadores más populares y utilizados por traders técnicos en todo el mundo para identificar puntos de inflexión en el mercado.",
+            "history": rsi_history,
+            "presentation": get_slides("rsi", "RSI", f"{last_rsi:.2f}", vote_rsi, rsi_desc, rsi_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -67,15 +73,18 @@ class StockAnalyzer:
         macd_line = macd.macd()
         signal_line = macd.macd_signal()
         vote_macd = "UP" if macd_line.iloc[-1] > signal_line.iloc[-1] else "DOWN"
+        macd_history = "Creado por Gerald Appel a finales de la década de 1970..."
+        macd_desc = "Sigue la tendencia y muestra la relación entre dos medias móviles."
         results.append({
             "id": "macd",
             "method": "MACD",
             "value": f"MACD: {macd_line.iloc[-1]:.2f}",
             "prediction": vote_macd,
-            "desc": "Sigue la tendencia y muestra la relación entre dos medias móviles.",
+            "desc": macd_desc,
             "explanation": "El MACD es un indicador de impulso de seguimiento de tendencia que muestra la relación entre dos medias móviles del precio de un valor.",
             "methodology": "Se resta la EMA de 26 períodos de la EMA de 12 períodos. La decisión se basa en el cruce: si la línea MACD cruza por encima de la señal, es alcista (UP); si cruza por debajo, es bajista (DOWN).",
-            "history": "Creado por Gerald Appel a finales de la década de 1970. Aunque originalmente diseñado para analizar el mercado de valores, se ha convertido en una herramienta fundamental en todos los mercados financieros por su capacidad de revelar cambios en la fuerza, dirección, impulso y duración de una tendencia.",
+            "history": macd_history,
+            "presentation": get_slides("macd", "MACD", f"{macd_line.iloc[-1]:.2f}", vote_macd, macd_desc, macd_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -90,15 +99,18 @@ class StockAnalyzer:
         sma50 = ta.trend.SMAIndicator(df['Close'], window=50).sma_indicator()
         sma200 = ta.trend.SMAIndicator(df['Close'], window=200).sma_indicator()
         vote_sma = "UP" if sma50.iloc[-1] > sma200.iloc[-1] else "DOWN"
+        sma_desc = "Compara tendencias a corto (50) y largo plazo (200)."
+        sma_history = "El uso de medias móviles se popularizó con el análisis técnico computarizado..."
         results.append({
             "id": "sma",
             "method": "Cruce de Medias (SMA 50/200)",
             "value": f"50: {sma50.iloc[-1]:.2f} / 200: {sma200.iloc[-1]:.2f}",
             "prediction": vote_sma,
-            "desc": "Compara tendencias a corto (50) y largo plazo (200).",
+            "desc": sma_desc,
             "explanation": "El cruce de medias móviles ayuda a identificar la dirección de la tendencia general.",
             "methodology": "Se comparan la Media Móvil Simple (SMA) de 50 días y la de 200 días. Un 'Cruce Dorado' (50 > 200) sugiere una tendencia alcista a largo plazo. Un 'Cruce de la Muerte' (50 < 200) sugiere lo contrario.",
-            "history": "El uso de medias móviles se popularizó con el análisis técnico computarizado en el siglo XX. El concepto del 'Cruce Dorado' y el 'Cruce de la Muerte' es ampliamente seguido por grandes instituciones financieras y fondos de inversión como una señal confirmatoria de cambios de tendencia a largo plazo.",
+            "history": sma_history,
+            "presentation": get_slides("sma", "SMA 50/200", f"50 vs 200", vote_sma, sma_desc, sma_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -124,15 +136,18 @@ class StockAnalyzer:
         else:
             vote_bb = "NEUTRAL"
             
+        bb_desc = "Evalúa la volatilidad y niveles de precios relativos."
+        bb_history = "Desarrolladas por John Bollinger en la década de 1980..."
         results.append({
             "id": "bb",
             "method": "Bandas de Bollinger",
             "value": f"P: {current_price:.2f}, Low: {bb_low.iloc[-1]:.2f}",
             "prediction": vote_bb,
-            "desc": "Evalúa la volatilidad y niveles de precios relativos.",
+            "desc": bb_desc,
             "explanation": "Las Bandas de Bollinger consisten en una banda central (media móvil) y dos bandas externas (desviación estándar).",
             "methodology": "Si el precio toca la banda inferior, se considera barato (sobreventa -> UP). Si toca la superior, se considera caro (sobrecompra -> DOWN).",
-            "history": "Desarrolladas por John Bollinger en la década de 1980. Bollinger buscaba una herramienta adaptable a la volatilidad del mercado, a diferencia de los canales fijos. Son ampliamente utilizadas para determinar si los precios están altos o bajos en una base relativa.",
+            "history": bb_history,
+            "presentation": get_slides("bb", "Bandas Bollinger", f"P: {current_price:.2f}", vote_bb, bb_desc, bb_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -148,15 +163,18 @@ class StockAnalyzer:
         stoch = ta.momentum.StochasticOscillator(df['High'], df['Low'], df['Close'])
         stoch_k = stoch.stoch()
         vote_stoch = "DOWN" if stoch_k.iloc[-1] > 80 else ("UP" if stoch_k.iloc[-1] < 20 else "NEUTRAL")
+        stoch_desc = "Compara el precio de cierre con el rango de precios en un periodo."
+        stoch_history = "Desarrollado por George Lane a finales de la década de 1950..."
         results.append({
             "id": "stoch",
             "method": "Oscilador Estocástico",
             "value": f"K%: {stoch_k.iloc[-1]:.2f}",
             "prediction": vote_stoch,
-            "desc": "Compara el precio de cierre con el rango de precios en un periodo.",
+            "desc": stoch_desc,
             "explanation": "El oscilador estocástico es un indicador de impulso que compara un precio de cierre particular con un rango de sus precios durante un cierto período de tiempo.",
             "methodology": "Valores por encima de 80 indican que el activo está sobrecomprado (vender). Valores por debajo de 20 indican que está sobrevendido (comprar).",
-            "history": "Desarrollado por George Lane a finales de la década de 1950. Lane observó que el estocástico sigue la velocidad o el impulso del precio. Como regla general, el impulso cambia de dirección antes que el precio.",
+            "history": stoch_history,
+            "presentation": get_slides("stoch", "Estocástico", f"{stoch_k.iloc[-1]:.2f}", vote_stoch, stoch_desc, stoch_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -171,15 +189,18 @@ class StockAnalyzer:
         # 6. EMA Trend
         ema20 = ta.trend.EMAIndicator(df['Close'], window=20).ema_indicator()
         vote_ema = "UP" if current_price > ema20.iloc[-1] else "DOWN"
+        ema_desc = "Tendencia a corto plazo usando media móvil exponencial."
+        ema_history = "Las medias móviles exponenciales ganaron popularidad..."
         results.append({
             "id": "ema",
             "method": "Tendencia EMA (20)",
             "value": f"P: {current_price:.2f} vs EMA: {ema20.iloc[-1]:.2f}",
             "prediction": vote_ema,
-            "desc": "Tendencia a corto plazo usando media móvil exponencial.",
+            "desc": ema_desc,
             "explanation": "La Media Móvil Exponencial (EMA) da más peso a los datos de precios recientes que la media móvil simple.",
             "methodology": "Analizamos la EMA de 20 días. Si el precio actual está por encima de la EMA, indica una tendencia alcista a corto plazo. Si está por debajo, bajista.",
-            "history": "Las medias móviles exponenciales ganaron popularidad con el advenimiento de la computación personal en los años 80 y 90, permitiendo a los traders reaccionar más rápido a los cambios de precios recientes que con las medias simples tradicionales.",
+            "history": ema_history,
+            "presentation": get_slides("ema", "EMA 20", f"{current_price:.2f}", vote_ema, ema_desc, ema_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -193,15 +214,18 @@ class StockAnalyzer:
         # 7. CCI
         cci = ta.trend.CCIIndicator(df['High'], df['Low'], df['Close']).cci()
         vote_cci = "DOWN" if cci.iloc[-1] > 100 else ("UP" if cci.iloc[-1] < -100 else "NEUTRAL")
+        cci_desc = "Identifica tendencias cíclicas en sus extremos."
+        cci_history = "Desarrollado por Donald Lambert en 1980..."
         results.append({
             "id": "cci",
             "method": "CCI (Commodity Channel Index)",
             "value": f"CCI: {cci.iloc[-1]:.2f}",
             "prediction": vote_cci,
-            "desc": "Identifica tendencias cíclicas en sus extremos.",
+            "desc": cci_desc,
             "explanation": "El CCI mide la diferencia entre el precio actual y su media histórica.",
             "methodology": "Se utiliza para identificar sobrecompra/sobreventa. Un valor > 100 implica sobrecompra (posible caída). Un valor < -100 implica sobreventa (posible subida).",
-            "history": "Desarrollado por Donald Lambert en 1980. Originalmente diseñado para identificar ciclos en materias primas (commodities), el indicador ha demostrado ser igual de efectivo en acciones, divisas y otros instrumentos financieros.",
+            "history": cci_history,
+            "presentation": get_slides("cci", "CCI", f"{cci.iloc[-1]:.2f}", vote_cci, cci_desc, cci_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -216,15 +240,18 @@ class StockAnalyzer:
         # 8. Williams %R
         wr = ta.momentum.WilliamsRIndicator(df['High'], df['Low'], df['Close']).williams_r()
         vote_wr = "UP" if wr.iloc[-1] < -80 else ("DOWN" if wr.iloc[-1] > -20 else "NEUTRAL")
+        wr_desc = "Indicador de momento inverso a niveles de 0 a -100."
+        wr_history = "Desarrollado por el famoso trader y autor Larry Williams..."
         results.append({
             "id": "wr",
             "method": "Williams %R",
             "value": f"%R: {wr.iloc[-1]:.2f}",
             "prediction": vote_wr,
-            "desc": "Indicador de momento inverso a niveles de 0 a -100.",
+            "desc": wr_desc,
             "explanation": "Williams %R es un indicador de momento que se mueve entre 0 y -100 y mide niveles de sobrecompra y sobreventa.",
             "methodology": "Si está por encima de -20 (cerca de 0), el activo está sobrecomprado. Si está por debajo de -80, está sobrevendido (oportunidad de compra).",
-            "history": "Desarrollado por el famoso trader y autor Larry Williams en 1973. Williams ha utilizado este indicador para convertir $10,000 en más de $1.1 millones en una competencia de trading de un año.",
+            "history": wr_history,
+            "presentation": get_slides("wr", "Williams %R", f"{wr.iloc[-1]:.2f}", vote_wr, wr_desc, wr_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates,
@@ -239,15 +266,18 @@ class StockAnalyzer:
         # 9. ROC
         roc = ta.momentum.ROCIndicator(df['Close'], window=12).roc()
         vote_roc = "UP" if roc.iloc[-1] > 0 else "DOWN"
+        roc_desc = "Mide el cambio porcentual en el precio."
+        roc_history = "El concepto de Rate of Change (Tasa de Cambio)..."
         results.append({
             "id": "roc",
             "method": "Momentum (Rate of Change)",
             "value": f"ROC: {roc.iloc[-1]:.2f}%",
             "prediction": vote_roc,
-            "desc": "Mide el cambio porcentual en el precio.",
+            "desc": roc_desc,
             "explanation": "El ROC es un oscilador de momento que mide el cambio porcentual entre el precio actual y el precio de hace n periodos (12 en este caso).",
             "methodology": "Si el ROC es positivo, el momento es alcista (el precio está subiendo aceleradamente). Si es negativo, el momento es bajista.",
-            "history": "El concepto de Rate of Change (Tasa de Cambio) es uno de los cálculos más básicos y antiguos en análisis técnico. No tiene un único inventor, ya que se basa en matemáticas fundamentales de cambio porcentual, pero fue formalizado en el trading técnico a mediados del siglo XX.",
+            "history": roc_history,
+            "presentation": get_slides("roc", "ROC", f"{roc.iloc[-1]:.2f}%", vote_roc, roc_desc, roc_history),
             "chart_type": "bar",
             "chart_data": {
                 "labels": dates,
@@ -264,16 +294,19 @@ class StockAnalyzer:
         vote_slope = "UP" if slope > 0 else "DOWN"
         # Create regression line points for chart
         reg_line = [slope * i + (y[0] - slope * 0) for i in range(len(x))]
+        slope_desc = "Dirección simple de los últimos 10 días."
+        slope_history = "La regresión lineal es una técnica estadística fundamental..."
         
         results.append({
             "id": "slope",
             "method": "Pendiente (Regresión Lineal)",
             "value": f"Pendiente: {slope:.2f}",
             "prediction": vote_slope,
-            "desc": "Dirección simple de los últimos 10 días.",
+            "desc": slope_desc,
             "explanation": "Calcula la pendiente matemática de la línea de mejor ajuste para los precios de cierre de los últimos 10 días.",
             "methodology": "Usamos regresión lineal (mínimos cuadrados). Una pendiente positiva indica que la tendencia a muy corto plazo es hacia arriba.",
-            "history": "La regresión lineal es una técnica estadística fundamental atribuida a Carl Friedrich Gauss a principios del siglo XIX. Su aplicación en finanzas para determinar la dirección de la tendencia es un pilar del análisis cuantitativo moderno.",
+            "history": slope_history,
+            "presentation": get_slides("slope", "Pendiente", f"{slope:.2f}", vote_slope, slope_desc, slope_history),
             "chart_type": "line",
             "chart_data": {
                 "labels": dates[-10:],
@@ -299,6 +332,8 @@ class StockAnalyzer:
         
         return {
             "ticker": self.ticker,
+            "company_name": self.info.get('longName', self.ticker) if self.info else self.ticker,
+            "company_summary": self.info.get('longBusinessSummary', 'No disponible.') if self.info else 'No disponible.',
             "current_price": current_price,
             "results": results,
             "summary": {

@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - APP_PASSWORD=secret123
+      - FLASK_SECRET_KEY=supersecretkeyCHANGE_ME
+      - REQUIRE_LOGIN=true
+    volumes:
+      - .:/app
