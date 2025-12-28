@@ -2,9 +2,9 @@ services:
   web:
     build: .
     expose:
-      - 80
+      - 3000
     environment:
-      - PORT=80
+      - PORT=3000
       - APP_PASSWORD=secret123
       - FLASK_SECRET_KEY=supersecretkeyCHANGE_ME
       - REQUIRE_LOGIN=true
