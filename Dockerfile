@@ -15,5 +15,5 @@ COPY . .
 # Expose port
 EXPOSE 80
 
-# Run the application with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "4", "app:app"]
+# Run the application with Gunicorn, respecting the PORT env var
+CMD sh -c "gunicorn --bind 0.0.0.0:${PORT:-80} --workers 4 app:app"
