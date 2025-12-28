@@ -1,7 +1,8 @@
 services:
   web:
     build: .
-
+    expose:
+      - 80
     environment:
       - PORT=80
       - APP_PASSWORD=secret123
