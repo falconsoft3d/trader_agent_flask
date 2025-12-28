@@ -159,6 +159,11 @@ def result(ticker):
     flash("Error obteniendo datos.", "error")
     return redirect(url_for('dashboard'))
 
+@app.route('/health')
+def health():
+    return {"status": "ok", "service": "trader-agent"}, 200
+
 if __name__ == '__main__':
+    print("Starting Trader Agent Flask App...")
     port = int(os.environ.get("PORT", 5001))
     app.run(host='0.0.0.0', debug=True, port=port)
