@@ -3,6 +3,7 @@ services:
     build: .
 
     environment:
+      - PORT=80
       - APP_PASSWORD=secret123
       - FLASK_SECRET_KEY=supersecretkeyCHANGE_ME
       - REQUIRE_LOGIN=true
