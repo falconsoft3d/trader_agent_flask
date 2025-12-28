@@ -1,12 +1,9 @@
 services:
   web:
     build: .
-    expose:
-      - 3000
-    environment:
-      - PORT=3000
-      - APP_PASSWORD=secret123
-      - FLASK_SECRET_KEY=supersecretkeyCHANGE_ME
-      - REQUIRE_LOGIN=true
-    volumes:
-      - .:/app
+    container_name: stockapp
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
