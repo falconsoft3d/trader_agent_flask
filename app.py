@@ -162,6 +162,21 @@ def result(ticker):
     flash("Error obteniendo datos.", "error")
     return redirect(url_for('dashboard'))
 
+@app.route('/result/<ticker>/json')
+def result_json(ticker):
+    if not is_authenticated():
+        return {"error": "Unauthorized"}, 401
+        
+    timeframe = request.args.get('timeframe', '1d')
+    analyzer = StockAnalyzer(ticker, interval=timeframe)
+    if analyzer.fetch_data():
+        res = analyzer.analyze()
+        if "error" in res:
+            return {"error": res['error']}, 400
+        return res
+    
+    return {"error": "Error obteniendo datos."}, 404
+
 @app.route('/health')
 def health():
     return {"status": "ok", "service": "trader-agent"}, 200

@@ -40,7 +40,10 @@ class StockAnalyzer:
 
         # Helper to format data for charts (last 100 days to keep it readable)
         display_df = df.iloc[-100:]
-        dates = [d.strftime('%Y-%m-%d') for d in display_df.index]
+        if self.interval == "1h":
+             dates = [d.strftime('%Y-%m-%d %H:%M') for d in display_df.index]
+        else:
+             dates = [d.strftime('%Y-%m-%d') for d in display_df.index]
         prices = display_df['Close'].tolist()
 
         results = []
@@ -348,5 +351,13 @@ class StockAnalyzer:
                 "down_votes": down_votes,
                 "neutral_votes": total_votes - up_votes - down_votes,
                 "decision": decision
+            },
+            "price_data": {
+                "dates": dates,
+                "open": display_df['Open'].tolist(),
+                "high": display_df['High'].tolist(),
+                "low": display_df['Low'].tolist(),
+                "close": prices,
+                "volume": display_df['Volume'].tolist()
             }
         }

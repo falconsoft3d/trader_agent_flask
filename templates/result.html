@@ -2,6 +2,7 @@
 
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <div class="animate-entry">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
@@ -17,11 +18,15 @@
                     }}</h3>
             </div>
             <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px; font-weight: 600;">
-                Precio Actual: ${{ "%.2f"|format(data.current_price) }}
+                Precio Actual: $<span id="currentPriceDisplay">{{ "%.2f"|format(data.current_price) }}</span>
                 <span
                     style="font-weight: 400; margin-left: 10px; border-left: 1px solid var(--border-color); padding-left: 10px;">
                     Análisis: {% if data.get('interval') == '1h' %}Por Hora (Corto Plazo){% else %}Diario (Estándar){%
                     endif %}
+                </span>
+                <span id="updateStatus"
+                    style="font-weight: 400; font-size: 11px; margin-left:10px; color: #10b981; opacity: 0; transition: opacity 0.5s;">
+                    Actualizado
                 </span>
             </p>
 
@@ -51,6 +56,8 @@
                 {% endif %}
         </div>
     </div>
+
+
 
     <div class="glass-card prediction-summary">
         <h3 style="font-size: 16px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
@@ -99,6 +106,12 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+
+    <!-- Main Price Chart -->
+    <h3 style="margin-bottom: 1rem; margin-top: 2rem; font-size: 18px;">Gráfico de Precios</h3>
+    <div class="glass-card" style="margin-bottom: 2rem; padding: 1rem;">
+        <div id="mainChart" style="width: 100%; height: 500px;"></div>
     </div>
 </div>
 
@@ -162,6 +175,7 @@
 <script>
     // Pass the full results object to JS
     const analysisData = {{ data.results | tojson }};
+    const priceData = {{ data.price_data | tojson }};
     let currentChart = null;
     let currentSlides = [];
     let currentSlideIndex = 0;
@@ -290,6 +304,95 @@
                 }
             }
         });
+    }
+
+    // Render Main Chart
+    if (priceData) {
+        const trace1 = {
+            x: priceData.dates,
+            close: priceData.close,
+            decreasing: { line: { color: '#ef4444' } },
+            high: priceData.high,
+            increasing: { line: { color: '#10b981' } },
+            line: { color: 'rgba(31,119,180,1)' },
+            low: priceData.low,
+            open: priceData.open,
+            type: 'candlestick',
+            xaxis: 'x',
+            yaxis: 'y',
+            name: 'Price'
+        };
+
+        const layout = {
+            title: 'Gráfico de Precios (HLC)',
+            dragmode: 'zoom',
+            showlegend: false,
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            xaxis: {
+                autorange: true,
+                title: 'Fecha',
+                gridcolor: '#30363d',
+                tickfont: { color: '#8b949e' }
+            },
+            yaxis: {
+                autorange: true,
+                type: 'linear',
+                gridcolor: '#30363d',
+                tickfont: { color: '#8b949e' }
+            },
+            margin: {
+                r: 10,
+                t: 40,
+                b: 40,
+                l: 60
+            },
+            font: {
+                family: 'Inter, sans-serif',
+                color: '#c9d1d9'
+            }
+        };
+
+        Plotly.newPlot('mainChart', [trace1], layout, { responsive: true });
+
+        // Real-time polling
+        const ticker = "{{ data.ticker }}";
+        const interval = "{{ data.interval }}";
+
+        setInterval(() => {
+            fetch(`/result/${ticker}/json?timeframe=${interval}`)
+                .then(response => response.json())
+                .then(newData => {
+                    if (newData.error) return;
+
+                    // Update Price Display
+                    const priceElement = document.getElementById('currentPriceDisplay');
+                    if (priceElement) {
+                        priceElement.innerText = newData.current_price.toFixed(2);
+
+                        // Flash update effect
+                        const status = document.getElementById('updateStatus');
+                        if (status) {
+                            status.style.opacity = '1';
+                            setTimeout(() => { status.style.opacity = '0'; }, 2000);
+                        }
+                    }
+
+                    // Update Chart
+                    if (newData.price_data) {
+                        const update = {
+                            x: [newData.price_data.dates],
+                            open: [newData.price_data.open],
+                            high: [newData.price_data.high],
+                            low: [newData.price_data.low],
+                            close: [newData.price_data.close]
+                        };
+
+                        Plotly.update('mainChart', update);
+                    }
+                })
+                .catch(err => console.error("Error polling data:", err));
+        }, 30000); // 30 seconds
     }
 </script>
 {% endblock %}
